@@ -1,5 +1,13 @@
 package dogapi;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -14,15 +22,23 @@ import java.util.*;
  */
 public class CachingBreedFetcher implements BreedFetcher {
     // TODO Task 2: Complete this class
+    private final BreedFetcher Fetcher;
+    private final Map<String, List<String>> cache = new HashMap<>();
     private int callsMade = 0;
     public CachingBreedFetcher(BreedFetcher fetcher) {
-
+        Fetcher = fetcher;
     }
 
     @Override
     public List<String> getSubBreeds(String breed) {
+        if(cache.containsKey(breed)) {
+            return cache.get(breed);
+        }
+        callsMade++;
+        List<String> subBreeds = Fetcher.getSubBreeds(breed);
+        cache.put(breed, subBreeds);
+        return subBreeds;
         // return statement included so that the starter code can compile and run.
-        return new ArrayList<>();
     }
 
     public int getCallsMade() {
